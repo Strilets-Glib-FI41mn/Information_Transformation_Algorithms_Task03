@@ -4,3 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+task2 = {git = "https://github.com/Strilets-Glib-FI41mn/Information_Transformation_Algorithms_Task02"}
