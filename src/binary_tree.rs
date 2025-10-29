@@ -1,22 +1,27 @@
-use std::ops::Add;
+use std::{ops::Add, rc::Rc};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Node<T>{
     value: T,
     left: Subtree<T>,
     right: Subtree<T>
 }
 
-#[derive(Debug)]
-struct Subtree<T>(Option<Box<Node<T>>>);
+pub enum Traversed<'a, T, G>{
+    Node(&'a Subtree<T>),
+    Value(G)
+}
+
+#[derive(Debug, Clone)]
+pub struct Subtree<T>(pub Option<Rc<Node<T>>>);
 
 impl<G: Ord + Copy + std::ops::Add<G, Output = G>> Add for Node<(Option<u8>, G)>{
     type Output = Node<(Option<u8>, G)>;
     fn add(self, rhs: Node<(Option<u8>, G)>) -> Self::Output {
         Self::Output{
             value: (None, self.value.1 + rhs.value.1),
-            left: Subtree(Some(Box::new(self))),
-            right: Subtree(Some(Box::new(rhs))),
+            left: Subtree(Some(Rc::new(self))),
+            right: Subtree(Some(Rc::new(rhs))),
         }
     }
 }
@@ -42,6 +47,23 @@ impl<G> Node<(Option<u8>, G)> {
             let mut right_path = previous_path.clone();
             right_path.push(true);
             right.find_u8(&right_path, collector);
+        }
+    }
+    pub fn traverse(&self, input: bool) -> Option<Traversed<(Option<u8>, G), u8>>{
+        match self.value.0{
+            Some(value) => {
+                Some(Traversed::Value(value))
+            },
+            None => {
+                match input{
+                    true => {
+                        Some(Traversed::Node(&self.right))
+                    },
+                    false => {
+                        Some(Traversed::Node(&self.left))
+                    },
+                }
+            },
         }
     }
 }
@@ -71,11 +93,11 @@ where G: Ord + Default + Copy + std::ops::Add<G, Output = G>{
             node2.value.1.cmp(&node1.value.1)
         });
     }
-    return BinaryTree{root: Some(Box::new(nodes.pop().unwrap()))};
+    return BinaryTree{root: Some(Rc::new(nodes.pop().unwrap()))};
 }
 
 pub struct BinaryTree<T>{
-    root: Option<Box<Node<T>>>,
+    pub root: Option<Rc<Node<T>>>,
 }
 
 

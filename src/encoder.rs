@@ -29,7 +29,7 @@ pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
         let mut compacted = File::create(output)?;
         let bytes_vec: Vec<_> = freq.iter().map(|n| n.to_be_bytes()).flatten().collect();
         let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();
-        compacted.write(&bytes_array); //from_be_bytes!!
+        compacted.write(&bytes_array)?; //from_be_bytes!!
         let mut writter = FileBitWriter::new(compacted);
         for byte in buffer.iter(){
             writter.write_bits(convertor[*byte as usize].clone())?;
