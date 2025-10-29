@@ -104,8 +104,10 @@ impl<G> BinaryTree<(Option<u8>, G)>{
     }
 }
 
+#[cfg(feature = "draw")]
 use std::collections::VecDeque;
 
+#[cfg(feature = "draw")]
 impl<T: std::fmt::Debug> BinaryTree<T> {
     pub fn draw(&self) {
         if let Some(root) = &self.root {
