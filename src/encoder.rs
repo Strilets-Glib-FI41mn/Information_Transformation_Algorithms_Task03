@@ -13,6 +13,7 @@ pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
     file.read_to_end(&mut buffer)?;
     
     if let Ok(freq) = freq{
+
         let sorted_freq = binary_tree::vec_of_ut(freq.clone());
         /* 
 
@@ -21,11 +22,15 @@ pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
         println!("{:?}", sorted_freq);
 
         */
+
+        
         let tree = binary_tree::tree_from_vec(sorted_freq);
         #[cfg(feature = "draw")]
         tree.draw();
         let convertor = tree.make_byte_conversion_array();
-        
+        #[cfg(feature = "print_converter")]
+        println!("{:?}", convertor);
+
         let mut compacted = File::create(output)?;
         let bytes_vec: Vec<_> = freq.iter().map(|n| n.to_be_bytes()).flatten().collect();
         let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();

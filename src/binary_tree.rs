@@ -2,13 +2,13 @@ use std::{ops::Add, rc::Rc};
 
 #[derive(Debug, Clone)]
 pub struct Node<T>{
-    value: T,
+    pub value: T,
     left: Subtree<T>,
     right: Subtree<T>
 }
 
-pub enum Traversed<'a, T, G>{
-    Node(&'a Subtree<T>),
+pub enum Traversed<T, G>{
+    Node(Rc<Node<T>>),
     Value(G)
 }
 
@@ -57,10 +57,16 @@ impl<G> Node<(Option<u8>, G)> {
             None => {
                 match input{
                     true => {
-                        Some(Traversed::Node(&self.right))
+                        if let Some(right) = &self.right.0{
+                            return Some(Traversed::Node(right.clone()))
+                        }
+                        None
                     },
                     false => {
-                        Some(Traversed::Node(&self.left))
+                        if let Some(left) = &self.left.0{
+                            return Some(Traversed::Node(left.clone()))
+                        }
+                        None
                     },
                 }
             },
