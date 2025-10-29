@@ -8,13 +8,14 @@ use crate::{binary_tree::{self, Node}, power_calc::power_calc};
 
 pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
     let mut file = File::open(input_file_name)?;
-    let mut output_file = File::create_new(output)?;
+    //let mut output_file = File::create_new(output)?;
+    let mut output_file = File::create(output)?;
     //let mut writter = FileBitWriter::new(output_file);
     let mut bytes_frequency: [u8; 256 * 4] = [0; 256*4];
     file.read_exact(&mut bytes_frequency)?;
     let mut frequencies = vec![];
     for i in 0..256{
-        frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3], bytes_frequency[i * 4 + 4]]));
+        frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
     }
     let frequencies = frequencies.into_iter().enumerate().collect();
     let tree = binary_tree::tree_from_vec(frequencies);
