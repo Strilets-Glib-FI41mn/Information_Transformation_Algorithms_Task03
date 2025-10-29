@@ -29,6 +29,21 @@ impl<G> Node<(Option<u8>, G)> {
             right: Subtree(None)
         }
     }
+    pub fn find_u8(&self, previous_path: &Vec<bool>, collector: &mut [Vec<bool>; 256]){
+        if let Some(val) = &self.value.0{
+            collector[*val as usize] = previous_path.clone();
+        }
+        if let Some(left) = &self.left.0{
+            let mut left_path = previous_path.clone();
+            left_path.push(false);
+            left.find_u8(&left_path, collector);
+        }
+        if let Some(right) = &self.right.0{
+            let mut right_path = previous_path.clone();
+            right_path.push(true);
+            right.find_u8(&right_path, collector);
+        }
+    }
 }
 
 pub fn vec_of_ut<T>(input: [T; 256]) -> Vec<(usize, T)>
@@ -64,6 +79,30 @@ pub struct BinaryTree<T>{
 }
 
 
+impl<G> BinaryTree<(Option<u8>, G)>{
+    pub fn make_byte_conversion_array(&self) -> [Vec<bool>; 256] {
+        const EMPTY: Vec<bool> = vec![];
+        let mut result = [EMPTY; 256];
+        if self.root.is_none(){
+            return result;
+        }
+        if let Some(root) = &self.root{
+            if let Some(_) = root.value.0{
+                println!("Why does root have value???");
+            }
+            if let Some(left) = &root.left.0{
+                left.find_u8(&vec![false], &mut result)
+            }
+
+
+            if let Some(right) = &root.right.0{
+                right.find_u8(&vec![true], &mut result)
+            }
+        }
+        
+        result
+    }
+}
 
 use std::collections::VecDeque;
 
