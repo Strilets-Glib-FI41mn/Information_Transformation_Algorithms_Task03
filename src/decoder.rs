@@ -15,7 +15,8 @@ pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
     file.read_exact(&mut bytes_frequency)?;
     let mut frequencies = vec![];
     for i in 0..256{
-        frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
+        //frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
+        frequencies.push(u32::from_le_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
     }
     let frequencies = frequencies.into_iter().enumerate().collect();
     let tree = binary_tree::tree_from_vec(frequencies);
