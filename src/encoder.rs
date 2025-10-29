@@ -1,4 +1,4 @@
-use std::{fs::File, io::{self, Read}};
+use std::{fs::File, io::{self, Read, Write}};
 
 use bit_writer_reader::bit_writter::FileBitWriter;
 
@@ -27,6 +27,7 @@ pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
         let convertor = tree.make_byte_conversion_array();
         
         let compacted = File::create(output)?;
+        compacted.write(&freq);
         let mut writter = FileBitWriter::new(compacted);
         for byte in buffer.iter(){
             writter.write_bits(convertor[*byte as usize].clone())?;
