@@ -4,7 +4,7 @@ use bit_writer_reader::bit_reader::FileBitReader;
 //use bit_writer_reader::bit_writter::FileBitWriter;
 
 
-use crate::{binary_tree::{self, Node}, power_calc::power_calc};
+use crate::binary_tree;
 
 pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
     let mut file = File::open(input_file_name)?;
