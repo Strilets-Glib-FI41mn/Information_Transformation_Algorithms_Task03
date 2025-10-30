@@ -4,8 +4,7 @@ use bit_writer_reader::bit_writter::FileBitWriter;
 
 use crate::{binary_tree, power_calc::power_calc};
 
-//pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
-pub fn encode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsRef<Path>{
+pub fn encode<P>(input_file_name: &P, output: &P, save_frequency: bool) -> io::Result<()> where P: AsRef<Path>{
     let freq = power_calc::<u32, P>(input_file_name);
     let mut file = File::open(input_file_name)?;
     let mut buffer = Vec::new();
@@ -16,14 +15,6 @@ pub fn encode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsR
     if let Ok(freq) = freq{
 
         let sorted_freq = binary_tree::vec_of_ut(freq.clone());
-        /* 
-
-        println!("Found {} u8 in the file", sorted_freq.len());
-        println!("Is vec of u8, power smaller than vector of frequencies: {}", sorted_freq.len() * 2 < 256 );
-        println!("{:?}", sorted_freq);
-
-        */
-
         
         let tree = binary_tree::tree_from_vec(sorted_freq);
         #[cfg(feature = "draw")]
@@ -33,9 +24,11 @@ pub fn encode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsR
         println!("{:?}", convertor);
 
         let mut compacted = File::create(output)?;
-        let bytes_vec: Vec<_> = freq.iter().map(|n| n.to_be_bytes()).flatten().collect();
-        let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();
-        compacted.write(&bytes_array)?; //from_be_bytes!!
+        if save_frequency{
+            let bytes_vec: Vec<_> = freq.iter().map(|n| n.to_be_bytes()).flatten().collect();
+            let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();
+            compacted.write(&bytes_array)?; //from_be_bytes!!
+        }
         let mut writter = FileBitWriter::new(compacted);
         for byte in buffer.iter(){
             writter.write_bits(convertor[*byte as usize].clone())?;

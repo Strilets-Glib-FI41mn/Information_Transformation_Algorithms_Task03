@@ -28,7 +28,9 @@ struct Cli {
     #[arg(long, short, default_value_t = Mode::Encode, value_enum)]
     mode: Mode,
     #[arg(long, short, default_value_t = false)]
-    overwrite: bool
+    overwrite: bool,
+    #[arg(long, short, default_value_t = false)]
+    frequencyless: bool
 }
 
 fn main() -> io::Result<()>{
@@ -81,7 +83,7 @@ fn main() -> io::Result<()>{
     }
     match cli.mode{
         Mode::Encode => {
-            encode(&input_path, &output_path)?;
+            encode(&input_path, &output_path, !cli.frequencyless)?;
         }
         Mode::Decode => {
             decode(&input_path, &output_path)?;
