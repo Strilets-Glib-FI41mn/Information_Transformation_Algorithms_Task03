@@ -1,7 +1,11 @@
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::Path;
 
-pub fn power_calc<T> (file_name: &str) -> std::io::Result<[T; 256]> where T: Default + std::ops::AddAssign<u32> + Copy{
+pub fn power_calc<T, P> (file_name: &P) -> std::io::Result<[T; 256]>
+where T: Default + std::ops::AddAssign<u32> + Copy,
+P: AsRef<Path>
+{
     let mut file = File::open(file_name)?;
     let mut buffer = Vec::new();
 

@@ -1,4 +1,4 @@
-use std::{fs::File, io::{self, Read, Write}};
+use std::{fs::File, io::{self, Read, Write}, path::Path};
 
 use bit_writer_reader::bit_reader::FileBitReader;
 //use bit_writer_reader::bit_writter::FileBitWriter;
@@ -6,7 +6,8 @@ use bit_writer_reader::bit_reader::FileBitReader;
 
 use crate::binary_tree;
 
-pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
+//pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
+pub fn decode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsRef<Path>{
     let mut file = File::open(input_file_name)?;
     //let mut output_file = File::create_new(output)?;
     let mut output_file = File::create(output)?;

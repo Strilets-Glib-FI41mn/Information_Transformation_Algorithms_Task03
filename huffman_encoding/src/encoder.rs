@@ -1,11 +1,12 @@
-use std::{fs::File, io::{self, Read, Write}};
+use std::{fs::File, io::{self, Read, Write}, path::Path};
 
 use bit_writer_reader::bit_writter::FileBitWriter;
 
 use crate::{binary_tree, power_calc::power_calc};
 
-pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
-    let freq = power_calc::<u32>(input_file_name);
+//pub fn encode(input_file_name: &str, output: &str) -> io::Result<()>{
+pub fn encode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsRef<Path>{
+    let freq = power_calc::<u32, P>(input_file_name);
     let mut file = File::open(input_file_name)?;
     let mut buffer = Vec::new();
 
