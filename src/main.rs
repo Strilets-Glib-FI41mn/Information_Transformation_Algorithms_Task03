@@ -79,8 +79,6 @@ fn main() -> io::Result<()>{
             return Ok(());
         }
     }
-    let input_path = input_path.to_str().unwrap();
-    let output_path = output_path.to_str().unwrap();
     match cli.mode{
         Mode::Encode => {
             encode(&input_path, &output_path)?;
