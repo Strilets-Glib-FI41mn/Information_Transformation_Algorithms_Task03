@@ -1,3 +1,0 @@
-This a is small example text.
-
-It exists to debug the encoder and decoder!t
