@@ -99,7 +99,7 @@ where G: Ord + Default + Copy + std::ops::Add<G, Output = G>{
             node2.value.1.cmp(&node1.value.1)
         });
     }
-    return BinaryTree{root: Some(Rc::new(nodes.pop().unwrap()))};
+    return BinaryTree{root: Some(Rc::new(nodes.pop().expect("The provided file is probably empty!")))};
 }
 
 pub struct BinaryTree<T>{
