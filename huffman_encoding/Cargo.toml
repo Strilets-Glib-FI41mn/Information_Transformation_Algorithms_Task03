@@ -4,7 +4,7 @@ version = "0.2.0"
 edition = "2024"
 
 [dependencies]
-bit_writer_reader = {git = "https://github.com/Strilets-Glib-FI41mn/Information_Transformation_Algorithms_Task02", rev = "3ae4ce4944cb10cd93cd65b1f30e4d29800ec587"}
+bit_writer_reader = {git = "https://github.com/Strilets-Glib-FI41mn/Information_Transformation_Algorithms_Task02", tag = "0.2.0"}
 
 [features]
 draw = []
