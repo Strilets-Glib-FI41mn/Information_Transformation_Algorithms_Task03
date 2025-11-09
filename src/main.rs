@@ -47,7 +47,9 @@ fn main() -> io::Result<()>{
             let mut out = input_path.clone();
             match cli.mode{
                 Mode::Encode => {
-                    out.set_extension("huffman");
+                    let mut new_extension = out.extension().map(|e| e.to_os_string()).unwrap_or_default();
+                    new_extension.push(".huffman");
+                    out.set_extension(new_extension);
                     out
                 }
                 Mode::Decode => {
