@@ -2,17 +2,12 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-pub fn power_calc<T, P> (file_name: &P) -> std::io::Result<[T; 256]>
+pub fn power_calc_file<T, P> (file_name: &P) -> std::io::Result<[T; 256]>
 where T: Default + std::ops::AddAssign<u32> + Copy,
 P: AsRef<Path>
 {
     let mut file = File::open(file_name)?;
-    let mut buffer = Vec::new();
-
-    // read the whole file
-    file.read_to_end(&mut buffer)?;
-    
-    Ok(calculate_frequencies(buffer))
+    power_calc(&mut file)
 }
 
 pub fn calculate_frequencies<T>(buffer: Vec<u8>) -> [T; 256] where T: Default + std::ops::AddAssign<u32> + Copy {
@@ -21,4 +16,14 @@ pub fn calculate_frequencies<T>(buffer: Vec<u8>) -> [T; 256] where T: Default + 
         frequencies[*byte as usize] += 1;
     });
     frequencies
+}
+
+
+pub fn power_calc<T, I> (mut input: I) -> std::io::Result<[T; 256]>
+where T: Default + std::ops::AddAssign<u32> + Copy, I: Read
+{
+    let mut buffer = Vec::new();
+    input.read_to_end(&mut buffer)?;
+    
+    Ok(calculate_frequencies(buffer))
 }

@@ -1,19 +1,19 @@
 use std::{fs::File, io::{self, Read, Write}, path::Path};
 
-use bit_writer_reader::bit_reader::FileBitReader;
-//use bit_writer_reader::bit_writter::FileBitWriter;
-
+use bit_writer_reader::bit_reader::BitReader;
 
 use crate::binary_tree;
 
-//pub fn decode(input_file_name: &str, output: &str) -> io::Result<()>{
-pub fn decode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsRef<Path>{
-    let mut file = File::open(input_file_name)?;
-    //let mut output_file = File::create_new(output)?;
-    let mut output_file = File::create(output)?;
-    //let mut writter = FileBitWriter::new(output_file);
+pub fn decode_file_name<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsRef<Path>{
+    let input_file = File::open(input_file_name)?;
+    let output_file = File::create(output)?;
+    decode(input_file, output_file)?;
+    Ok(())
+}
+
+pub fn decode<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
     let mut bytes_frequency: [u8; 256 * 4] = [0; 256*4];
-    file.read_exact(&mut bytes_frequency)?;
+    input.read_exact(&mut bytes_frequency)?;
     let mut frequencies = vec![];
     for i in 0..256{
         frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
@@ -25,7 +25,7 @@ pub fn decode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsR
 
     #[cfg(feature = "draw")]
     tree.draw();
-    let mut reader = FileBitReader::new(file);
+    let mut reader = BitReader::new(input);
     let mut result;
     let root = tree.root.unwrap();
     let mut node = root.clone();
@@ -35,7 +35,7 @@ pub fn decode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsR
             Ok(result_vec) => {
                 for i in 0..result_vec.len(){
                     if let Some(val) = node.value.0{
-                        output_file.write(&[val])?;
+                        output.write(&[val])?;
                         node = root.clone();
                     }
                     let step = node.traverse(result_vec[i]).unwrap();
@@ -44,7 +44,7 @@ pub fn decode<P>(input_file_name: &P, output: &P) -> io::Result<()> where P: AsR
                             node = new_node.clone();
                         },
                         binary_tree::Traversed::Value(val) => {
-                            output_file.write(&[val])?;
+                            output.write(&[val])?;
                             node = root.clone();
 
                         },

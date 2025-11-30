@@ -1,6 +1,6 @@
 use dialoguer::{Confirm, Editor};
-use huffman_encoding::decoder::decode;
-use huffman_encoding::encoder::encode;
+use huffman_encoding::decoder::decode_file_name;
+use huffman_encoding::encoder::encode_file_name;
 
 use clap::Parser;
 use serde::Serialize;
@@ -85,10 +85,10 @@ fn main() -> io::Result<()>{
     }
     match cli.mode{
         Mode::Encode => {
-            encode(&input_path, &output_path, !cli.frequencyless)?;
+            encode_file_name(&input_path, &output_path, !cli.frequencyless)?;
         }
         Mode::Decode => {
-            decode(&input_path, &output_path)?;
+            decode_file_name(&input_path, &output_path)?;
         }
     }
     
