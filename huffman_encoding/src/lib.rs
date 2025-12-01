@@ -48,4 +48,26 @@ before using this eBook.".to_string();
         assert_eq!(he_dec, thing);
         Ok(())
     }
+    // fn huffman_text_arbr(input: &str) -> std::io::Result<()>{
+    //     let thing = input.as_bytes();
+    //     let cursor = std::io::Cursor::new(&thing);
+    //     let mut he_text = vec![];
+    //     let mut cursor_writter = std::io::Cursor::new(&mut he_text);
+    //     encoder::encode_with_padding(cursor, &mut cursor_writter)?;
+    //     let cursor = std::io::Cursor::new(&he_text);
+    //     let mut he_dec = vec![];
+    //     decoder::decode_with_padding(cursor, &mut he_dec)?;
+        
+    //     println!("{:?}", str::from_utf8(&he_dec));
+    //     assert_eq!(he_dec, thing);
+    //     Ok(())
+    // }
+    // #[test]
+    // fn fuz(){
+    //     #![cfg_attr(fuzzing, feature(coverage_attribute))]
+    //     use serde::{Deserialize, Serialize};
+    //     let _ = fuzzcheck::fuzz_test(huffman_text_arbr) // FuzzerBuilder1
+    // .default_options() // FuzzerBuilder5!  we use the default values for stages 2 to 5
+    // .launch();
+    // }
 }
