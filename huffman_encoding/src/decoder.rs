@@ -64,6 +64,9 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
     input.read_exact(&mut bytes_frequency)?;
     let mut padding = [0];
     input.read_exact(&mut padding)?;
+    #[cfg(test)]{
+        println!("padding decoding: {}", &padding[0]);
+    }
     let mut frequencies = vec![];
     for i in 0..256{
         frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
@@ -85,11 +88,21 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
                 result = reader.read_bits(8);
                 let v_len = result_vec.len();
                 let last_byte_m = match &result{
-                    Ok(v2) => v2.len() == 0,
-                    Err(_) => true
+                    Ok(_) => false,
+                    Err(e) => {
+                        println!("{e}");
+                        true
+                    }
                 };
                 let last = match last_byte_m{
-                    true => v_len - padding[0] as usize + 1,
+                    true => {
+                        if padding[0] == 0{
+                            v_len
+                        }else{
+                            v_len - padding[0] as usize + 1
+                        }
+                        // v_len - padding[0] as usize + 1, //+ 1,
+                        }
                     false => v_len,
                 };
                 for i in 0..last {
@@ -109,6 +122,7 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
                         },
                     }
                 }
+
             },
             Err(_) => {
                 break;
