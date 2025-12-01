@@ -1,3 +1,4 @@
 /target
 Cargo.lock
 /tested
+.DS_Store
