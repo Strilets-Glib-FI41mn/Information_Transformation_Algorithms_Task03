@@ -2,3 +2,4 @@
 Cargo.lock
 /tested
 .DS_Store
+/huffman_encoding/target

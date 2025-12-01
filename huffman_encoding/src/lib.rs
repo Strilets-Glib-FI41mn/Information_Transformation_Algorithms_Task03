@@ -2,8 +2,10 @@ pub mod power_calc;
 pub mod binary_tree;
 pub mod encoder;
 pub mod decoder;
+
 #[cfg(test)]
 mod tests {
+    use crate::*;
     #[test]
     fn huffman_text_big() -> std::io::Result<()>{
         let text = "The Project Gutenberg eBook of The Ethics of Aristotle
@@ -19,13 +21,30 @@ before using this eBook.".to_string();
         let cursor = std::io::Cursor::new(&thing);
         let mut he_text = vec![];
         let mut cursor_writter = std::io::Cursor::new(&mut he_text);
-        huffman_encoding::encoder::encode_with_padding(cursor, &mut cursor_writter)?;
+        encoder::encode_with_padding(cursor, &mut cursor_writter)?;
         let cursor = std::io::Cursor::new(&he_text);
         let mut he_dec = vec![];
-        huffman_encoding::decoder::decode_with_padding(cursor, &mut he_dec)?;
+        decoder::decode_with_padding(cursor, &mut he_dec)?;
         
         println!("{:?}", str::from_utf8(&he_dec));
         // assert_eq!(str::from_utf8(&he_dec), Ok(&text).map(|x| x.as_str()));
+        assert_eq!(thing, he_dec);
+        Ok(())
+    }
+
+    #[test]
+    fn huffman_text_small() -> std::io::Result<()>{
+        let text = "Ананас".to_string();
+        let thing = text.as_bytes();
+        let cursor = std::io::Cursor::new(&thing);
+        let mut he_text = vec![];
+        let mut cursor_writter = std::io::Cursor::new(&mut he_text);
+        encoder::encode_with_padding(cursor, &mut cursor_writter)?;
+        let cursor = std::io::Cursor::new(&he_text);
+        let mut he_dec = vec![];
+        decoder::decode_with_padding(cursor, &mut he_dec)?;
+        
+        println!("{:?}", str::from_utf8(&he_dec));
         assert_eq!(he_dec, thing);
         Ok(())
     }

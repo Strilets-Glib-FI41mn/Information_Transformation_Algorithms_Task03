@@ -89,7 +89,7 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
                     Err(_) => true
                 };
                 let last = match last_byte_m{
-                    true => v_len - padding[0] as usize,
+                    true => v_len - padding[0] as usize + 1,
                     false => v_len,
                 };
                 for i in 0..last {

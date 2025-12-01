@@ -100,7 +100,8 @@ pub fn encode_with_padding<I: Read + Clone, O: Write + io::Seek>(mut input: I, m
         }
         let padding = writter.get_padding();
         let old = writter.output.seek(io::SeekFrom::Current(0))?;
-        writter.output.seek(io::SeekFrom::Start(256 * 4 + 1))?;
+        // writter.output.seek(io::SeekFrom::Start(256 * 4 + 1))?;
+        writter.output.seek(io::SeekFrom::Start(256 * 4))?;
         writter.output.write(&[padding as u8])?;
         writter.output.seek(io::SeekFrom::Start(old))?;
         drop(writter);
