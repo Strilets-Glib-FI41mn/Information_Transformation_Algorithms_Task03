@@ -60,7 +60,7 @@ before using this eBook.____".to_string();
     }
     #[test]
     fn huffman_text_small_a() -> std::io::Result<()>{
-        let text = "asklsdsdsdasdasq qnvzxCÍç∆ˆœˆœ∆∂ˆ¨ƒ˙-----------sdsddssss".to_string();
+        let text = "asklsdsdsdasdasq qnvzxCÍç∆ˆœˆœ∆∂ˆ¨ƒ˙-----------sdsddsdss".to_string();
         let original = text.as_bytes();
         println!("original len: {}", original.len());
         let cursor = std::io::Cursor::new(&original);
@@ -68,6 +68,7 @@ before using this eBook.____".to_string();
         let mut cursor_writter = std::io::Cursor::new(&mut he_text);
         encoder::encode_with_padding(cursor, &mut cursor_writter)?;
         let cursor = std::io::Cursor::new(&he_text);
+        println!("cursor len: {}", he_text.len());
         let mut he_dec = vec![];
         decoder::decode_with_padding(cursor, &mut he_dec)?;
         

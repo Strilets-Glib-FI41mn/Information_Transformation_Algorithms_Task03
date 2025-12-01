@@ -59,13 +59,14 @@ pub fn decode<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
     Ok(())
 }
 
-pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
+pub fn decode_with_padding<I: Read + std::fmt::Debug + io::Seek, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
     let mut bytes_frequency: [u8; 256 * 4] = [0; 256*4];
     input.read_exact(&mut bytes_frequency)?;
-    let mut padding = [0];
-    input.read_exact(&mut padding)?;
+    let mut padding_buff = [0];
+    input.read_exact(&mut padding_buff)?;
+    let padding = padding_buff[0];
     #[cfg(test)]{
-        println!("padding decoding: {}", &padding[0]);
+        println!("padding decoding: {}", &padding);
     }
     let mut frequencies = vec![];
     for i in 0..256{
@@ -87,22 +88,23 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
             Ok(result_vec) => {
                 result = reader.read_bits(8);
                 let v_len = result_vec.len();
+                // println!("{:?}",&reader.buf_reader.seek(io::SeekFrom::Current(0)));
                 let last_byte_m = match &result{
                     Ok(_) => false,
                     Err(e) => {
+                        // println!("{:?}",&reader.buf_reader);
                         println!("{e}");
                         true
                     }
                 };
                 let last = match last_byte_m{
                     true => {
-                        if padding[0] == 0{
+                        if padding == 0{
                             v_len
                         }else{
-                            v_len - padding[0] as usize + 1
+                            v_len - padding as usize + 1
                         }
-                        // v_len - padding[0] as usize + 1, //+ 1,
-                        }
+                    }
                     false => v_len,
                 };
                 for i in 0..last {
@@ -118,13 +120,15 @@ pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io:
                         binary_tree::Traversed::Value(val) => {
                             output.write(&[val])?;
                             node = root.clone();
-
                         },
                     }
                 }
 
             },
             Err(_) => {
+                if padding == 0 && let Some(val) = node.value.0{
+                    output.write(&[val])?;
+                }
                 break;
             },
         }

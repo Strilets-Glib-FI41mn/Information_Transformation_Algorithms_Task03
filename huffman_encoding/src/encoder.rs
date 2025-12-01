@@ -104,7 +104,6 @@ pub fn encode_with_padding<I: Read + Clone, O: Write + io::Seek>(mut input: I, m
         writter.output.seek(io::SeekFrom::Start(256 * 4))?;
         writter.output.write(&[padding as u8])?;
         writter.output.seek(io::SeekFrom::Start(old))?;
-        drop(writter);
     }
     
     Ok(())
