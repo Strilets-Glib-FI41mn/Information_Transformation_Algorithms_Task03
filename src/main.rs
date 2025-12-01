@@ -60,7 +60,7 @@ fn main() -> io::Result<()>{
                         .interact()
                         .unwrap();
                     if !confirmation{
-                        if let Some(rv) = Editor::new().edit(&format!("{}", &out.to_str().unwrap()) ).unwrap() {
+                        if let Some(rv) = Editor::new().edit(&(&out.to_str().unwrap()).to_string() ).unwrap() {
                             println!("The file will become:");
                             println!("{}", rv);
                             out = rv.into();

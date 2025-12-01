@@ -58,3 +58,62 @@ pub fn decode<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
     }
     Ok(())
 }
+
+pub fn decode_with_padding<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
+    let mut bytes_frequency: [u8; 256 * 4] = [0; 256*4];
+    input.read_exact(&mut bytes_frequency)?;
+    let mut padding = [0];
+    input.read_exact(&mut padding)?;
+    let mut frequencies = vec![];
+    for i in 0..256{
+        frequencies.push(u32::from_be_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
+        //frequencies.push(u32::from_le_bytes([bytes_frequency[i * 4], bytes_frequency[i * 4 + 1], bytes_frequency[i * 4 + 2], bytes_frequency[i * 4 + 3]]));
+    }
+    //let frequencies = frequencies.into_iter().enumerate().collect();
+    let sorted_freq = binary_tree::vec_of_ut(frequencies.try_into().unwrap());
+    let tree = binary_tree::tree_from_vec(sorted_freq);
+
+    #[cfg(feature = "draw")]
+    tree.draw();
+    let mut reader = BitReader::new(input);
+    let mut result = reader.read_bits(8);
+    let root = tree.root.unwrap();
+    let mut node = root.clone();
+    loop {
+        match result{
+            Ok(result_vec) => {
+                result = reader.read_bits(8);
+                let v_len = result_vec.len();
+                let last_byte_m = match &result{
+                    Ok(v2) => v2.len() == 0,
+                    Err(_) => true
+                };
+                let last = match last_byte_m{
+                    true => v_len - padding[0] as usize,
+                    false => v_len,
+                };
+                for i in 0..last {
+                    if let Some(val) = node.value.0{
+                        output.write(&[val])?;
+                        node = root.clone();
+                    }
+                    let step = node.traverse(result_vec[i]).unwrap();
+                    match step{
+                        binary_tree::Traversed::Node(new_node) => {
+                            node = new_node.clone();
+                        },
+                        binary_tree::Traversed::Value(val) => {
+                            output.write(&[val])?;
+                            node = root.clone();
+
+                        },
+                    }
+                }
+            },
+            Err(_) => {
+                break;
+            },
+        }
+    }
+    Ok(())
+}
