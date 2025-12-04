@@ -91,9 +91,9 @@ pub fn decode_with_padding<I: Read + std::fmt::Debug + io::Seek, O: Write>(mut i
                 // println!("{:?}",&reader.buf_reader.seek(io::SeekFrom::Current(0)));
                 let last_byte_m = match &result{
                     Ok(_) => false,
-                    Err(e) => {
+                    Err(_) => {
                         // println!("{:?}",&reader.buf_reader);
-                        println!("{e}");
+                        // println!("{e}");
                         true
                     }
                 };
