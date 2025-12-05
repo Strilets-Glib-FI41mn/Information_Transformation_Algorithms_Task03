@@ -1,6 +1,6 @@
 [package]
 name = "Information_Transformation_Algorithms_Task03"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 
 [dependencies]

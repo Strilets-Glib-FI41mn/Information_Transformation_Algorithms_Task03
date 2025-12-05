@@ -2,7 +2,7 @@ use std::{fs::File, io::{self, Read, SeekFrom, Write}, path::Path};
 
 use bit_writer_reader::bit_writter::{FileBitWriter, BitWriter};
 
-use crate::{binary_tree, power_calc::{power_calc, power_calc_file}};
+use crate::{binary_tree, power_calc::{calculate_frequencies_r, power_calc_file}};
 
 pub fn encode_file_name<P>(input_file_name: &P, output: &P, save_frequency: bool) -> io::Result<()> where P: AsRef<Path>{
     let freq = power_calc_file::<u32, P>(input_file_name);
@@ -38,7 +38,7 @@ pub fn encode_file_name<P>(input_file_name: &P, output: &P, save_frequency: bool
 }
 
 pub fn encode<I: Read + Clone, O: Write>(mut input: I, mut output: O, save_frequency: bool) -> io::Result<()>{
-    let freq = power_calc::<u32, I>(input.clone());
+    let freq = calculate_frequencies_r::<u32, I>(input.clone());
     let mut buffer = Vec::new();
 
     // read the whole file
@@ -73,7 +73,7 @@ pub fn encode<I: Read + Clone, O: Write>(mut input: I, mut output: O, save_frequ
 
 pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I, mut output: O) -> io::Result<()>{
     let start = input.seek(SeekFrom::Current(0))?;
-    let freq = power_calc::<u32, _>(&mut input);
+    let freq = calculate_frequencies_r::<u32, _>(&mut input);
     input.seek(SeekFrom::Start(start))?;
      if let Ok(freq) = freq{
 
