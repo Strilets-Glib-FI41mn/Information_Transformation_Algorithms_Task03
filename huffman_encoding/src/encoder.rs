@@ -1,4 +1,4 @@
-use std::{fs::File, io::{self, Read, Write}, path::Path};
+use std::{fs::File, io::{self, Read, SeekFrom, Write}, path::Path};
 
 use bit_writer_reader::bit_writter::{FileBitWriter, BitWriter};
 
@@ -71,13 +71,10 @@ pub fn encode<I: Read + Clone, O: Write>(mut input: I, mut output: O, save_frequ
 }
 
 
-pub fn encode_with_padding<I: Read + Clone, O: Write + io::Seek>(mut input: I, mut output: O) -> io::Result<()>{
-    let freq = power_calc::<u32, I>(input.clone());
-    let mut buffer = Vec::new();
-
-    // read the whole file
-    input.read_to_end(&mut buffer)?;
-    
+pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I, mut output: O) -> io::Result<()>{
+    let start = input.seek(SeekFrom::Current(0))?;
+    let freq = power_calc::<u32, _>(&mut input);
+    input.seek(SeekFrom::Start(start))?;
      if let Ok(freq) = freq{
 
         let sorted_freq = binary_tree::vec_of_ut(freq.clone());
@@ -95,8 +92,8 @@ pub fn encode_with_padding<I: Read + Clone, O: Write + io::Seek>(mut input: I, m
         output.write(&[0])?; //padding data!
 
         let mut writter = BitWriter::new(output);
-        for byte in buffer.iter(){
-            writter.write_bits(&convertor[*byte as usize].clone())?;
+        for byte in input.bytes(){
+            writter.write_bits(&convertor[byte? as usize].clone())?;
         }
         let padding = writter.get_padding();
         let old = writter.output.seek(io::SeekFrom::Current(0))?;
