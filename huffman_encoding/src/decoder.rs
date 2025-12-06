@@ -126,8 +126,7 @@ pub fn decode_with_padding<I: Read + std::fmt::Debug + io::Seek, O: Write>(mut i
 
             },
             Err(_) => {
-                // if padding == 0 && let Some(val) = node.value.0{
-                if let Some(val) = node.value.0{
+                if padding == 0 && let Some(val) = node.value.0{
                     output.write(&[val])?;
                 }
                 break;
