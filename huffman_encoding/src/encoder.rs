@@ -88,6 +88,7 @@ pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I
 
         let bytes_vec: Vec<_> = freq.iter().map(|n| n.to_be_bytes()).flatten().collect();
         let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();
+        let output_start = output.seek(SeekFrom::Current(0))?;
         output.write(&bytes_array)?; //from_be_bytes!!
         output.write(&[0])?; //padding data!
         let padding = {
@@ -100,7 +101,7 @@ pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I
             padding
         };
         let old = output.seek(io::SeekFrom::Current(0))?;
-        output.seek(io::SeekFrom::Start(256 * 4 + start))?;
+        output.seek(io::SeekFrom::Start(256 * 4 + output_start))?;
         output.write(&[padding as u8])?;
         output.seek(io::SeekFrom::Start(old))?;
         output.flush()?;
