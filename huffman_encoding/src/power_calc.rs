@@ -28,11 +28,14 @@ where T: Default + std::ops::AddAssign<u32> + Copy, I: Read
     Ok(calculate_frequencies(buffer))
 }
 
-pub fn calculate_frequencies_r<T, R: Read>(input: R) -> std::io::Result<[T; 256]>
+pub fn calculate_frequencies_r<T, R: Read>(mut input: R) -> std::io::Result<[T; 256]>
 where T: Default + std::ops::AddAssign<u32> + Copy {
     let mut frequencies : [T; 256] = [T::default(); 256];
-    for byte in input.bytes(){
-        frequencies[byte? as usize] += 1;
-    };
+    let mut buff = [0; 16];
+    while let Ok(size) = input.read(&mut buff) && size > 0{
+        for byte in &buff[0..size]{
+            frequencies[*byte as usize] += 1;    
+        }
+    }
     Ok(frequencies)
 }

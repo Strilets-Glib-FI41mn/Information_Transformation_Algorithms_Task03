@@ -32,7 +32,7 @@ before using this eBook.".to_string();
         Ok(())
     }
 
-    // #[test]
+    #[test]
     fn huffman_text_big_a() -> std::io::Result<()>{
         let text = "The Project Gutenberg eBook of The Ethics of Aristotle
     
