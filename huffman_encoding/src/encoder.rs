@@ -65,8 +65,8 @@ pub fn encode<I: Read + Clone, O: Write>(mut input: I, mut output: O, save_frequ
         for byte in buffer.iter(){
             writter.write_bits(&convertor[*byte as usize].clone())?;
         }
+        writter.output.flush()?;
     }
-    
     Ok(())
 }
 
@@ -101,7 +101,7 @@ pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I
         writter.output.seek(io::SeekFrom::Start(256 * 4 + start))?;
         writter.output.write(&[padding as u8])?;
         writter.output.seek(io::SeekFrom::Start(old))?;
+        writter.output.flush()?;
     }
-    
     Ok(())
 }

@@ -56,6 +56,7 @@ pub fn decode<I: Read, O: Write>(mut input: I, mut output: O)-> io::Result<()>{
             },
         }
     }
+    output.flush()?;
     Ok(())
 }
 
@@ -133,5 +134,6 @@ pub fn decode_with_padding<I: Read + std::fmt::Debug + io::Seek, O: Write>(mut i
             },
         }
     }
+    output.flush()?;
     Ok(())
 }
