@@ -90,18 +90,20 @@ pub fn encode_with_padding<I: Read + io::Seek, O: Write + io::Seek>(mut input: I
         let bytes_array: [u8; 256 * 4] = bytes_vec.try_into().unwrap();
         output.write(&bytes_array)?; //from_be_bytes!!
         output.write(&[0])?; //padding data!
-
-        let mut writter = BitWriter::new(output);
-        for byte in input.bytes(){
-            writter.write_bits(&convertor[byte? as usize].clone())?;
-        }
-        let padding = writter.get_padding();
-        let old = writter.output.seek(io::SeekFrom::Current(0))?;
-        // writter.output.seek(io::SeekFrom::Start(256 * 4 + 1))?;
-        writter.output.seek(io::SeekFrom::Start(256 * 4 + start))?;
-        writter.output.write(&[padding as u8])?;
-        writter.output.seek(io::SeekFrom::Start(old))?;
-        writter.output.flush()?;
+        let padding = {
+            let mut writter = BitWriter::new(&mut output);
+            for byte in input.bytes(){
+                writter.write_bits(&convertor[byte? as usize].clone())?;
+            }
+            let padding = writter.get_padding();
+            drop(writter);
+            padding
+        };
+        let old = output.seek(io::SeekFrom::Current(0))?;
+        output.seek(io::SeekFrom::Start(256 * 4 + start))?;
+        output.write(&[padding as u8])?;
+        output.seek(io::SeekFrom::Start(old))?;
+        output.flush()?;
     }
     Ok(())
 }
