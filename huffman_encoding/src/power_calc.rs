@@ -32,7 +32,17 @@ pub fn calculate_frequencies_r<T, R: Read>(input: R) -> std::io::Result<[T; 256]
 where T: Default + std::ops::AddAssign<u32> + Copy {
     let mut frequencies : [T; 256] = [T::default(); 256];
     for byte in input.bytes(){
-        frequencies[byte? as usize] += 1;
+        match byte{
+            Ok(byte) => {
+                frequencies[byte as usize] += 1;
+            },
+            Err(err) => {
+                #[cfg(debug_assertions)]{
+                    println!("err: {err:?}");
+                }
+                return Err(err)
+            },
+        }
     };
     Ok(frequencies)
 }
